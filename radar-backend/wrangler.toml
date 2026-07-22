@@ -1,0 +1,8 @@
+name = "radar-backend"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "radar-db"
+database_id = "afa813a1-b25f-4a87-9dfe-b8487c213b29"
