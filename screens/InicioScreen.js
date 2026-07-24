@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
 
 const LIMITE_IMPACTO_G = 1.8; // força (em "g") 
 const COOLDOWN_IMPACTO_MS = 3000; // tempo mínimo entre dois avisos de impacto
-
+const API_URL = 'https://radar-backend.seu-usuario.workers.dev';
 const DIRECOES_CARDINAIS = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
 
 export default function App() {
@@ -158,16 +158,7 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
     </View>
   );
 }
-
-fetch('https://radar-backend.seu-usuario.workers.dev/impactos', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    forca,
-    lat: localizacao?.latitude,
-    lon: localizacao?.longitude,
-  }),
-});
+}
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 24, backgroundColor: '#fff', padding: 20 },
