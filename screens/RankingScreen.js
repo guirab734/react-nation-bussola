@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { View, Text, FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
-const API_URL = 'https://radar-backend.seu-usuario.workers.dev';
+const API_URL = 'https://radar-backend.bussola734.workers.dev';
 
 export default function RankingScreen() {
   const [dados, setDados] = useState([]);
