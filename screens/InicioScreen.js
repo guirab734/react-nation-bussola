@@ -14,7 +14,7 @@ Notifications.setNotificationHandler({
 
 const LIMITE_IMPACTO_G = 1.8; // força (em "g") 
 const COOLDOWN_IMPACTO_MS = 3000; // tempo mínimo entre dois avisos de impacto
-const API_URL = 'https://radar-backend.seu-usuario.workers.dev';
+const API_URL = 'https://radar-backend.bussola734.workers.dev';
 const DIRECOES_CARDINAIS = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
 
 export default function App() {
