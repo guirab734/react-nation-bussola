@@ -12,7 +12,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-const LIMITE_IMPACTO_G = 1.8; // força (em "g") 
+const LIMITE_IMPACTO_G = 1.8; // força (em "g")
 const COOLDOWN_IMPACTO_MS = 3000; // tempo mínimo entre dois avisos de impacto
 const API_URL = 'https://radar-backend.bussola734.workers.dev';
 const DIRECOES_CARDINAIS = ['N', 'NE', 'L', 'SE', 'S', 'SO', 'O', 'NO'];
@@ -21,7 +21,9 @@ export default function App() {
   const [grausBussola, setGrausBussola] = useState(0);
 
   const [localizacao, setLocalizacao] = useState(null);
-  const [enderecoTexto, setEnderecoTexto] = useState('Toque em "Atualizar localização"');
+  const [enderecoTexto, setEnderecoTexto] = useState(
+    'Toque em "Atualizar localização"'
+  );
   const [carregandoLocalizacao, setCarregandoLocalizacao] = useState(false);
 
   const [monitoramentoAtivo, setMonitoramentoAtivo] = useState(true);
@@ -56,32 +58,40 @@ export default function App() {
       const agora = Date.now();
       const tempoDesdeUltimoImpacto = agora - ultimoImpactoTimestampRef.current;
 
-if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
-  ultimoImpactoTimestampRef.current = agora;
-  setTotalImpactos((anterior) => anterior + 1);
-  setUltimoImpacto(new Date());
+      if (
+        forca > LIMITE_IMPACTO_G &&
+        tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS
+      ) {
+        ultimoImpactoTimestampRef.current = agora;
+        setTotalImpactos((anterior) => anterior + 1);
+        setUltimoImpacto(new Date());
 
-  Vibration.vibrate([0, 200, 100, 200]);
-  Notifications.scheduleNotificationAsync({
-    content: { title: 'Impacto detectado!', body: `Força registrada: ${forca.toFixed(2)}g` },
-    trigger: null,
-  });
+        Vibration.vibrate([0, 200, 100, 200]);
+        Notifications.scheduleNotificationAsync({
+          content: {
+            title: 'Impacto detectado!',
+            body: `Força registrada: ${forca.toFixed(2)}g`,
+          },
+          trigger: null,
+        });
 
-  fetch(`${API_URL}/impactos`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      forca,
-      lat: localizacao?.latitude ?? null,
-      lon: localizacao?.longitude ?? null,
-    }),
-  }).catch((erro) => console.log('Erro ao salvar impacto:', erro));
-}
+        fetch(`${API_URL}/impactos`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            forca,
+            lat: localizacao?.latitude ?? null,
+            lon: localizacao?.longitude ?? null,
+          }),
+        }).catch((erro) => console.log('Erro ao salvar impacto:', erro));
+      }
+    });
 
     return () => assinaturaAcelerometro.remove();
-  }, [monitoramentoAtivo]);
+  }, [monitoramentoAtivo, localizacao]);
 
-  const direcaoCardinal = (graus) => DIRECOES_CARDINAIS[Math.round(graus / 45) % 8];
+  const direcaoCardinal = (graus) =>
+    DIRECOES_CARDINAIS[Math.round(graus / 45) % 8];
 
   const atualizarLocalizacao = async () => {
     setCarregandoLocalizacao(true);
@@ -99,7 +109,8 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
 
       const [endereco] = await Location.reverseGeocodeAsync(posicao.coords);
       if (endereco) {
-        const cidade = endereco.city || endereco.subregion || 'Local desconhecido';
+        const cidade =
+          endereco.city || endereco.subregion || 'Local desconhecido';
         const regiao = endereco.region ? `, ${endereco.region}` : '';
         setEnderecoTexto(`${cidade}${regiao}`);
       } else {
@@ -117,7 +128,12 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
       <Text style={styles.titulo}>Radar de Impacto</Text>
 
       <View style={styles.areaBussola}>
-        <View style={[styles.agulhaContorno, { transform: [{ rotate: `${-grausBussola}deg` }] }]}>
+        <View
+          style={[
+            styles.agulhaContorno,
+            { transform: [{ rotate: `${-grausBussola}deg` }] },
+          ]}
+        >
           <View style={styles.agulhaNorte} />
           <View style={styles.agulhaSul} />
         </View>
@@ -130,11 +146,14 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
         <Text style={styles.texto}>{enderecoTexto}</Text>
         {localizacao && (
           <Text style={styles.textoPequeno}>
-            Lat: {localizacao.latitude.toFixed(4)} · Lon: {localizacao.longitude.toFixed(4)}
+            Lat: {localizacao.latitude.toFixed(4)} · Lon:{' '}
+            {localizacao.longitude.toFixed(4)}
           </Text>
         )}
         <Button
-          title={carregandoLocalizacao ? 'Buscando...' : 'Atualizar localização'}
+          title={
+            carregandoLocalizacao ? 'Buscando...' : 'Atualizar localização'
+          }
           onPress={atualizarLocalizacao}
           disabled={carregandoLocalizacao}
         />
@@ -147,10 +166,16 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
         <Text style={styles.contador}>{totalImpactos}</Text>
         <Text style={styles.textoPequeno}>impacto(s) detectado(s)</Text>
         {ultimoImpacto && (
-          <Text style={styles.textoPequeno}>Último às {ultimoImpacto.toLocaleTimeString()}</Text>
+          <Text style={styles.textoPequeno}>
+            Último às {ultimoImpacto.toLocaleTimeString()}
+          </Text>
         )}
         <Button
-          title={monitoramentoAtivo ? 'Pausar monitoramento' : 'Retomar monitoramento'}
+          title={
+            monitoramentoAtivo
+              ? 'Pausar monitoramento'
+              : 'Retomar monitoramento'
+          }
           onPress={() => setMonitoramentoAtivo((anterior) => !anterior)}
           color={monitoramentoAtivo ? 'red' : 'green'}
         />
@@ -158,10 +183,16 @@ if (forca > LIMITE_IMPACTO_G && tempoDesdeUltimoImpacto > COOLDOWN_IMPACTO_MS) {
     </View>
   );
 }
-}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 24, backgroundColor: '#fff', padding: 20 },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 24,
+    backgroundColor: '#fff',
+    padding: 20,
+  },
   titulo: { fontSize: 22, fontWeight: 'bold' },
   texto: { fontSize: 16, color: '#000', textAlign: 'center' },
   textoPequeno: { fontSize: 12, color: '#555', textAlign: 'center' },
