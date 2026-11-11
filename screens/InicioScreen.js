@@ -45,7 +45,9 @@ export default function App() {
 
   // Permissão de notificações (pedida uma vez ao abrir o app)
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    Notifications.requestPermissionsAsync().catch((erro) => {
+      console.warn('Não foi possível solicitar notificações:', erro);
+    });
   }, []);
 
   // Detector de impacto (acelerômetro)
@@ -73,7 +75,7 @@ export default function App() {
             body: `Força registrada: ${forca.toFixed(2)}g`,
           },
           trigger: null,
-        });
+        }).catch((erro) => console.warn('Não foi possível notificar o impacto:', erro));
 
         fetch(`${API_URL}/impactos`, {
           method: 'POST',
@@ -96,14 +98,12 @@ export default function App() {
   const atualizarLocalizacao = async () => {
     setCarregandoLocalizacao(true);
 
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') {
-      setEnderecoTexto('Permissão de localização negada.');
-      setCarregandoLocalizacao(false);
-      return;
-    }
-
     try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setEnderecoTexto('Permissão de localização negada.');
+        return;
+      }
       const posicao = await Location.getCurrentPositionAsync({});
       setLocalizacao(posicao.coords);
 
@@ -118,9 +118,9 @@ export default function App() {
       }
     } catch (erro) {
       setEnderecoTexto('Não foi possível obter a localização.');
+    } finally {
+      setCarregandoLocalizacao(false);
     }
-
-    setCarregandoLocalizacao(false);
   };
 
   return (
